@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="aquamarine">#50FFB1</color>
+    <color name="black">#FF000000</color>
+    <color name="feldgrau">#546D64</color>
+    <color name="feldgrau2">#4D685A</color>
+    <color name="grey">#D6D6D6</color>
+    <color name="mint">#4FB286</color>
+    <color name="viridian">#3C896D</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Proyectofinal</string>
+    <style name="Base.Theme.Proyectofinal" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        
+    </style>
+    <style name="Theme.Proyectofinal" parent="Base.Theme.Proyectofinal"/>
+</resources>
