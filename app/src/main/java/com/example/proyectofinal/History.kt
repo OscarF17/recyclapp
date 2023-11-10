@@ -34,39 +34,7 @@ class History(dbInput: AppDatabase) : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_history, container, false)
-        edtId = view.findViewById(R.id.edtId)
-        edtProduct = view.findViewById(R.id.edtProduct)
-        btnInsert = view.findViewById(R.id.btnInsert)
-        btnShow = view.findViewById(R.id.btnShow)
-        txtResults = view.findViewById(R.id.txtResults)
-
-        btnInsert.setOnClickListener {
-            val id = edtId.text.toString()
-            val product = edtProduct.text.toString()
-            if (id.isNotBlank()) {
-                GlobalScope.launch(Dispatchers.IO) {
-                    val historial = Historial(id = id, producto = product)
-                    val result = db.historialDao().insert(historial)
-                    launch(Dispatchers.Main) {
-
-                    }
-                }
-            }
-        }
-
-        btnShow.setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
-                val historial = db.historialDao().getAllHistorial()
-                launch(Dispatchers.Main) {
-                    val output = StringBuilder()
-
-                    for (hist in historial) {
-                        output.append("ID: ${hist.id}, Nombre: ${hist.producto}")
-                    }
-                    txtResults.text = output.toString()
-                }
-            }
-        }
+        recyclerView = view.findViewById(R.id.recyclerView)
 
         return view
     }
