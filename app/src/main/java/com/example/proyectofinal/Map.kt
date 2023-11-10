@@ -1,29 +1,43 @@
 package com.example.proyectofinal
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.LocationListener
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 
-class Map : Fragment(), OnMapReadyCallback {
+class Map : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private lateinit var view: View
-    private lateinit var map: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var mMap: GoogleMap
+    internal lateinit var mLastLocation: Location
+    internal var mCurrentLocationMarker: Marker? = null
+    internal var mGoogleApiClient: GoogleApiClient? = null
+    internal lateinit var  mLocationRequest: LocationRequest
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,74 +50,106 @@ class Map : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
-        val searchView: SearchView
-        searchView = view.findViewById(R.id.mapSearch)
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                Log.d("MapFragment", "Query submitted: $query")
-                query?.let { location ->
-                    searchLocation(location)
-                }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("MapFragment", "Query text changed: $newText")
-                return true
-            }
-        })
+        val searchEditText: EditText = view.findViewById(R.id.mapSearch)
+        val searchButton: Button = view.findViewById(R.id.searchButton)
+        searchButton.setOnClickListener {
+            searchLocation(searchEditText)
+        }
 
         mapFragment.getMapAsync(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-
-        // Habilitar la capa de tráfico (opcional)
-        map.isTrafficEnabled = true
-
-        // Habilitar el botón de ubicación actual
-        map.isMyLocationEnabled = true
-
-        // Coordenadas de la UDEM Monterrey
-        val udemCoordinates = LatLng(25.6610, -100.4202)
-
-        // Agregar marcador en la UDEM
-        val marker = MarkerOptions().position(udemCoordinates).title("UDEM Monterrey")
-        map.addMarker(marker)
-
-        // Centrar la cámara en la UDEM con un nivel de zoom de 18
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(udemCoordinates, 18f),
-            4000,
-            null
-        )
+        mMap = googleMap
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                buildGoogleApiClient()
+                mMap!!.isMyLocationEnabled = true
+            }
+        } else {
+            buildGoogleApiClient()
+            mMap!!.isMyLocationEnabled = true
+        }
     }
 
-    private fun searchLocation(location: String) {
-        val geocoder = Geocoder(requireContext())
-        try {
-            val addressList: List<Address>? = geocoder.getFromLocationName(location, 1)
-            addressList?.let {
-                if (it.isNotEmpty()) {
-                    val address = it[0]
-                    val latitude = address.latitude
-                    val longitude = address.longitude
-                    Log.d("MapFragment", "Latitude: $latitude, Longitude: $longitude")
+    protected fun buildGoogleApiClient() {
+        mGoogleApiClient = GoogleApiClient.Builder(requireContext())
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .addApi(LocationServices.API).build()
+        mGoogleApiClient!!.connect()
+    }
 
-                    // Ahora puedes usar latitude y longitude según tus necesidades.
+    override fun onLocationChanged(location: Location) {
+        mLastLocation = location
+        if (mCurrentLocationMarker != null) {
+            mCurrentLocationMarker!!.remove()
+        }
 
-                    val searchedLocation = LatLng(latitude, longitude)
-                    map.addMarker(MarkerOptions().position(searchedLocation).title(location))
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(searchedLocation, 15f))
-                }
+        val latLng = LatLng(location.latitude, location.longitude)
+        val markerOptions = MarkerOptions()
+        markerOptions.position(latLng)
+        markerOptions.title("Current Position")
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        mCurrentLocationMarker = mMap!!.addMarker(markerOptions)
+
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        mMap!!.moveCamera(CameraUpdateFactory.zoomTo(11f))
+
+        if (mGoogleApiClient != null) {
+           LocationServices.getFusedLocationProviderClient(requireContext())
+        }
+    }
+
+    override fun onConnected(p0: Bundle?) {
+        mLocationRequest = LocationRequest()
+        mLocationRequest.interval = 1000
+        mLocationRequest.fastestInterval = 1000
+        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.getFusedLocationProviderClient(requireContext())
+        }
+    }
+
+
+    override fun onConnectionSuspended(p0: Int) {
+
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+
+    }
+
+    fun searchLocation(view: View) {
+        val locationSearch: EditText = view.findViewById(R.id.mapSearch)
+        val location: String = locationSearch.text.toString().trim()
+        var addressList: List<Address>? = null
+
+        if (location.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Please provide a location", Toast.LENGTH_SHORT).show()
+        } else {
+            val geocoder = Geocoder(requireContext())
+            try {
+                addressList = geocoder.getFromLocationName(location, 1)
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+
+            if (addressList != null && addressList.isNotEmpty()) {
+                val address = addressList[0]
+                val latlng = LatLng(address.latitude, address.longitude)
+                mMap?.addMarker(MarkerOptions().position(latlng).title(location))
+                mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 18f))
+            } else {
+                Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
