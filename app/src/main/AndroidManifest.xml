@@ -29,6 +29,11 @@
             android:value="@string/google_maps_key"/>
 
         <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
