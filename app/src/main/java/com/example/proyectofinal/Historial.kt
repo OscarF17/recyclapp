@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class Historial(
     @PrimaryKey
     val id: String,
-    val producto: String
+    val producto: String,
+    val tipo: String,
+    val img: String
 )

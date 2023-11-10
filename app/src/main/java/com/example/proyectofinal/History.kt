@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -20,11 +21,7 @@ TODO: Revisar que los registros insertados no sean duplicados por la llave prima
 
 class History(dbInput: AppDatabase) : Fragment() {
     // TODO: Rename and change types of parameters
-    private lateinit var edtId: EditText
-    private lateinit var edtProduct: EditText
-    private lateinit var btnInsert: Button
-    private lateinit var btnShow: Button
-    private lateinit var txtResults: TextView
+    private lateinit var recyclerView: RecyclerView
     private val db = dbInput
 
     override fun onCreate(savedInstanceState: Bundle?) {
