@@ -52,6 +52,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiClient.Co
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         val searchEditText: EditText = view.findViewById(R.id.mapSearch)
         val searchButton: Button = view.findViewById(R.id.searchButton)
+
         searchButton.setOnClickListener {
             searchLocation(searchEditText)
         }
@@ -74,6 +75,8 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiClient.Co
             buildGoogleApiClient()
             mMap!!.isMyLocationEnabled = true
         }
+
+        recyclerMarkers()
     }
 
     protected fun buildGoogleApiClient() {
@@ -145,11 +148,27 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiClient.Co
             if (addressList != null && addressList.isNotEmpty()) {
                 val address = addressList[0]
                 val latlng = LatLng(address.latitude, address.longitude)
-                mMap?.addMarker(MarkerOptions().position(latlng).title(location))
+                mMap?.addMarker(MarkerOptions().position(latlng).title(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
                 mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 18f))
+
             } else {
                 Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    fun recyclerMarkers() {
+        val nameList: List<String> = listOf("Reciclables San Pedro", "Planta de Reciclado Grupo AlEn", "Chatarra JRRR", "Centro de Reciclaje 1", "Centro de Reciclaje Servicios Públicos y Medio Ambiente")
+        val latitudeList: List<Double> = listOf(25.67161164230018, 25.67231021179866, 25.6675139169062, 25.671774618402647, 25.66691687829407)
+        val longitudeList: List<Double> = listOf(-100.39913442329072, -100.43629443916835, -100.43234622756339, -100.39922539260367, -100.4103270005425)
+
+        for (index in nameList.indices) {
+            val name = nameList[index]
+            val latitude = latitudeList[index]
+            val longitude = longitudeList[index]
+            val latLng = LatLng(latitude, longitude)
+
+            mMap?.addMarker(MarkerOptions().position(latLng).title(name))
         }
     }
 }
