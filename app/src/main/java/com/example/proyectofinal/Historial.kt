@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Historial")
 data class Historial(
     @PrimaryKey
-    val id: Int,
+    val id: String,
     val producto: String
 )

@@ -1,5 +1,6 @@
 package com.example.proyectofinal
 
+import android.app.appsearch.GlobalSearchSession
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,26 +8,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-
-/**
- * A simple [Fragment] subclass.
- * Use the [History.newInstance] factory method to
- * create an instance of this fragment.
+import android.widget.TextView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.StringBuilder
+/*
+TODO: Revisar que los registros insertados no sean duplicados por la llave primaria
+      NO se hace automáticamente por el Room ya que el ID no es autoincremental
  */
-class History(db: AppDatabase) : Fragment() {
+
+class History(dbInput: AppDatabase) : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var edtId: EditText
     private lateinit var edtProduct: EditText
     private lateinit var btnInsert: Button
+    private lateinit var btnShow: Button
+    private lateinit var txtResults: TextView
+    private val db = dbInput
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
     override fun onCreateView(
@@ -38,24 +40,37 @@ class History(db: AppDatabase) : Fragment() {
         edtId = view.findViewById(R.id.edtId)
         edtProduct = view.findViewById(R.id.edtProduct)
         btnInsert = view.findViewById(R.id.btnInsert)
+        btnShow = view.findViewById(R.id.btnShow)
+        txtResults = view.findViewById(R.id.txtResults)
+
+        btnInsert.setOnClickListener {
+            val id = edtId.text.toString()
+            val product = edtProduct.text.toString()
+            if (id.isNotBlank()) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    val historial = Historial(id = id, producto = product)
+                    val result = db.historialDao().insert(historial)
+                    launch(Dispatchers.Main) {
+
+                    }
+                }
+            }
+        }
+
+        btnShow.setOnClickListener {
+            GlobalScope.launch(Dispatchers.IO) {
+                val historial = db.historialDao().getAllHistorial()
+                launch(Dispatchers.Main) {
+                    val output = StringBuilder()
+
+                    for (hist in historial) {
+                        output.append("ID: ${hist.id}, Nombre: ${hist.producto}")
+                    }
+                    txtResults.text = output.toString()
+                }
+            }
+        }
 
         return view
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment History.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(db:AppDatabase) =
-            History(db).apply {
-
-            }
     }
 }
