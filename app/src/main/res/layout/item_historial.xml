@@ -47,6 +47,7 @@
             android:background="@color/transparent"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:id="@+id/btnInfo"
             ></Button>
         <Button
             android:layout_height="wrap_content"
@@ -58,6 +59,7 @@
             android:textSize="20dp"
             android:background="@color/transparent"
             android:layout_weight="1"
+            android:id="@+id/btnDel"
             ></Button>
 
     </LinearLayout>

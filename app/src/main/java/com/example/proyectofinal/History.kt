@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -23,6 +24,8 @@ class History(dbInput: AppDatabase) : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var recyclerView: RecyclerView
     private val db = dbInput
+    lateinit var adapter: HistorialAdapter
+    private val historial = mutableListOf<Historial>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,9 @@ class History(dbInput: AppDatabase) : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         recyclerView = view.findViewById(R.id.recyclerView)
-
+        adapter = HistorialAdapter(historial)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
         return view
     }
 }
