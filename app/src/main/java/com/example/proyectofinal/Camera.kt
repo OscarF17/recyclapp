@@ -81,8 +81,6 @@ class Camera : Fragment() {
                 view3.visibility = View.VISIBLE
 
                 getData(result.contents)
-
-                Toast.makeText(requireContext(), "Scanned: ${result.contents}", Toast.LENGTH_SHORT).show()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -91,13 +89,26 @@ class Camera : Fragment() {
 
 
     private fun displayData(post: Post) {
+        val btnScan = binding.btnScan
+        val btnBack = binding.btnBack
+        val view1 = binding.textView1
+        val view2 = binding.textView2
+        val view3 = binding.textView3
+
+        if (post.id == "NONE") {
+            btnScan.visibility = View.VISIBLE
+            btnBack.visibility = View.GONE
+            view1.visibility = View.GONE
+            view2.visibility = View.GONE
+            view3.visibility = View.GONE
+            Toast.makeText(requireContext(), "No se encontró en la base de datos 😣", Toast.LENGTH_SHORT).show()
             Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
-            val view1 = binding.textView1
-            val view2 = binding.textView2
-            val view3 = binding.textView3
+        } else {
+            Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
             view1.text = "ID: ${post.id}"
             view2.text = "nombre: ${post.name}"
             view3.text = "tip: ${post.tips}"
+        }
     }
 
     private fun getData(id: String) {
