@@ -16,7 +16,6 @@ class HistorialAdapter(private val historial: List<Historial>):
         private lateinit var db: AppDatabase
 
         fun bind(hist: Historial) {
-                // TODO: Guardar el nombre de la imagen en la bd
                 var url = "http://35.208.119.80:5000/image/${hist.img}"
                 Picasso.get().load(url).into(binding.historialImagen);
                 binding.historialProducto.text = hist.producto
