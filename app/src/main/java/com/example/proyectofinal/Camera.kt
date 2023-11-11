@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.zxing.integration.android.IntentIntegrator
 import com.example.proyectofinal.databinding.FragmentCameraBinding
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,6 +48,7 @@ class Camera : Fragment() {
             binding.textView1.visibility = View.GONE
             binding.textView2.visibility = View.GONE
             binding.textView3.visibility = View.GONE
+            binding.imageView.visibility = View.GONE
         }
     }
 
@@ -72,6 +74,7 @@ class Camera : Fragment() {
                 var view1 = binding.textView1
                 var view2 = binding.textView2
                 var view3 = binding.textView3
+                var imageView = binding.imageView
 
                 /* Quitar boton de Scannear y poner boton de regreso y de textview de info */
                 btnScan2.visibility = View.GONE
@@ -79,21 +82,25 @@ class Camera : Fragment() {
                 view1.visibility = View.VISIBLE
                 view2.visibility = View.VISIBLE
                 view3.visibility = View.VISIBLE
+                imageView.visibility = View.VISIBLE
 
                 getData(result.contents)
             }
         } else {
+
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
 
     private fun displayData(post: Post) {
-        val btnScan = binding.btnScan
-        val btnBack = binding.btnBack
-        val view1 = binding.textView1
-        val view2 = binding.textView2
-        val view3 = binding.textView3
+        var btnScan = binding.btnScan
+        var btnBack = binding.btnBack
+        var view1 = binding.textView1
+        var view2 = binding.textView2
+        var view3 = binding.textView3
+        var imageView = binding.imageView
+        var url = "http://35.208.119.80:5000/image/${post.img}"
 
         if (post.id == "NONE") {
             btnScan.visibility = View.VISIBLE
@@ -101,13 +108,15 @@ class Camera : Fragment() {
             view1.visibility = View.GONE
             view2.visibility = View.GONE
             view3.visibility = View.GONE
+            imageView.visibility = View.GONE
             Toast.makeText(requireContext(), "No se encontró en la base de datos 😣", Toast.LENGTH_SHORT).show()
             Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
         } else {
-            Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
+            Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips}, ${post.img} ")
+            Picasso.get().load(url).into(imageView);
             view1.text = "ID: ${post.id}"
-            view2.text = "nombre: ${post.name}"
-            view3.text = "tip: ${post.tips}"
+            view2.text = "${post.name}"
+            view3.text = "${post.tips}"
         }
     }
 
