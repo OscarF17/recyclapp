@@ -39,7 +39,7 @@ class History(dbInput: AppDatabase) : Fragment() {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         recyclerView = view.findViewById(R.id.recyclerView)
         adapter = HistorialAdapter(historial)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
         return view
     }
