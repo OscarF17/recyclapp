@@ -15,14 +15,18 @@ import com.example.proyectofinal.databinding.FragmentCameraBinding
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
+import androidx.room.Room
+
 
 class Camera : Fragment() {
 
     private lateinit var binding: FragmentCameraBinding
+    private lateinit var db: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -113,10 +117,24 @@ class Camera : Fragment() {
             Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
         } else {
             Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips}, ${post.img} ")
-            Picasso.get().load(url).into(imageView);
-            view1.text = "ID: ${post.id}"
-            view2.text = "${post.name}"
-            view3.text = "${post.tips}"
+
+            db = Room.databaseBuilder(requireContext(),
+                AppDatabase::class.java, "Recyclapp.db").build()
+
+            GlobalScope.launch(Dispatchers.IO) {
+                val check = db.historialDao().getHistorialById(post.id)
+                launch(Dispatchers.Main) {
+                    Picasso.get().load(url).into(imageView);
+                    view1.text = "ID: ${post.id}"
+                    view2.text = "${post.name}"
+                    view3.text = "${post.tips}"
+                }
+                if(check.isEmpty()) {
+                    val i = db.historialDao().insert(Historial(id = post.id, producto = post.name, tipo = post.type, img = ""))
+                }
+            }
+
+
         }
     }
 

@@ -22,4 +22,7 @@ interface HistorialDao {
 
     @Query("DELETE FROM Historial")
     fun deleteEverything()
+
+    @Query("SELECT * FROM Historial WHERE id LIKE :historialId")
+    fun getHistorialById(historialId: String): List<Historial>
 }

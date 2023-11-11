@@ -52,20 +52,12 @@ class History(dbInput: AppDatabase) : Fragment() {
 
 
         GlobalScope.launch(Dispatchers.IO) {
-            db.historialDao().deleteEverything()
-            val h = Historial(id="123", producto = "bonafont", tipo = "plastico", img = "img.jpg")
-            val h2 = Historial(id="12345", producto = "chococrisps", tipo = "carton", img = "")
-            var insertar = db.historialDao().insert(h)
-            insertar = db.historialDao().insert(h2)
             val hist = db.historialDao().getAllHistorial()
 
             launch(Dispatchers.Main) {
                 historial.addAll(hist)
                 adapter.notifyDataSetChanged()
             }
-
-
-
         }
 
         return view
