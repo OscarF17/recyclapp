@@ -20,11 +20,6 @@ import kotlinx.coroutines.launch
 import java.lang.StringBuilder
 import androidx.room.Room
 
-/*
-TODO: Revisar que los registros insertados no sean duplicados por la llave primaria
-      NO se hace automáticamente por el Room ya que el ID no es autoincremental
- */
-
 class History(dbInput: AppDatabase) : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var db: AppDatabase
@@ -44,7 +39,6 @@ class History(dbInput: AppDatabase) : Fragment() {
         adapter = HistorialAdapter(historial)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
-        Log.i("LOGOSCAR", "Reycler View inicializado")
 
         db = Room.databaseBuilder(requireContext(),
             AppDatabase::class.java, "Recyclapp.db").build()
@@ -59,22 +53,5 @@ class History(dbInput: AppDatabase) : Fragment() {
         }
 
         return view
-    }
-
-    private fun getData() {
-        Log.i("LOGOSCAR", "Obteniendo datos...")
-        GlobalScope.launch(Dispatchers.IO) {
-            Log.i("LOGOSCAR", "Leyendo base de datos...")
-            val hist = db.historialDao().getAllHistorial()
-            Log.i("LOGOSCAR", "Base de datos leida")
-            launch(Dispatchers.Main) {
-                Log.i("LOGOSCAR", "Guardando historial...")
-                historial.addAll(hist)
-                Log.i("LOGOSCAR", "Actualizando dataset...")
-                adapter.notifyDataSetChanged()
-                Log.i("LOGOSCAR", "Exito")
-            }
-
-        }
     }
 }

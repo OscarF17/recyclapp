@@ -123,10 +123,7 @@ class Camera : Fragment() {
             imageView.visibility = View.GONE
 
             Toast.makeText(requireContext(), "No se encontró en la base de datos 😣", Toast.LENGTH_SHORT).show()
-            Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
         } else {
-            Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips}, ${post.img} ")
-
             db = Room.databaseBuilder(requireContext(),
                 AppDatabase::class.java, "Recyclapp.db").build()
 
@@ -150,7 +147,6 @@ class Camera : Fragment() {
     private fun getData(id: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.i("LOG_ROBBY", "try")
                 val call = getRetrofit().create(JsonPlaceholderApi::class.java)
                     .getPosts("http://35.208.119.80:5000/get_product/${id}")
                 val post = call.body()
@@ -160,8 +156,6 @@ class Camera : Fragment() {
                             displayData(post)
                         }
                     }
-                    Log.i("LOG_ROBBY", "$call")
-                    Log.i("LOG_ROBBY", "${call.body()}")
                 }
 
             } catch (e: Exception) {
