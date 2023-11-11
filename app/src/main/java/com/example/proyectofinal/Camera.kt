@@ -1,17 +1,20 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.proyectofinal
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.util.Log
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.zxing.integration.android.IntentIntegrator
+import androidx.room.Room
 import com.example.proyectofinal.databinding.FragmentCameraBinding
+import com.google.zxing.integration.android.IntentIntegrator
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +22,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
-import androidx.room.Room
 
 
 class Camera : Fragment() {
@@ -31,7 +32,7 @@ class Camera : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCameraBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -63,6 +64,7 @@ class Camera : Fragment() {
         scanner.initiateScan()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -74,13 +76,13 @@ class Camera : Fragment() {
             } else {
 
                 /* Conseguir Vistas */
-                var btnScan2 = binding.btnScan
-                var btnBack = binding.btnBack
-                var view1 = binding.textView1
-                var view2 = binding.textView2
-                var view3 = binding.textView3
-                var imageView = binding.imageView
-                var scanTitle = binding.scanTitle
+                val btnScan2 = binding.btnScan
+                val btnBack = binding.btnBack
+                val view1 = binding.textView1
+                val view2 = binding.textView2
+                val view3 = binding.textView3
+                val imageView = binding.imageView
+                val scanTitle = binding.scanTitle
 
                 /* Quitar boton de Scannear y poner boton de regreso y de textview de info */
                 btnScan2.visibility = View.GONE
@@ -100,15 +102,16 @@ class Camera : Fragment() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun displayData(post: Post) {
-        var btnScan = binding.btnScan
-        var btnBack = binding.btnBack
-        var view1 = binding.textView1
-        var view2 = binding.textView2
-        var view3 = binding.textView3
-        var imageView = binding.imageView
-        var url = "http://35.208.119.80:5000/image/${post.img}"
-        var scanTitle = binding.scanTitle
+        val btnScan = binding.btnScan
+        val btnBack = binding.btnBack
+        val view1 = binding.textView1
+        val view2 = binding.textView2
+        val view3 = binding.textView3
+        val imageView = binding.imageView
+        val url = "http://35.208.119.80:5000/image/${post.img}"
+        val scanTitle = binding.scanTitle
 
         if (post.id == "NONE") {
             btnScan.visibility = View.VISIBLE
@@ -130,13 +133,13 @@ class Camera : Fragment() {
             GlobalScope.launch(Dispatchers.IO) {
                 val check = db.historialDao().getHistorialById(post.id)
                 launch(Dispatchers.Main) {
-                    Picasso.get().load(url).into(imageView);
+                    Picasso.get().load(url).into(imageView)
                     view1.text = "ID: ${post.id}"
-                    view2.text = "${post.name}"
-                    view3.text = "${post.tips}"
+                    view2.text = post.name
+                    view3.text = post.tips
                 }
                 if(check.isEmpty()) {
-                    val i = db.historialDao().insert(Historial(id = post.id, producto = post.name, tipo = post.type, img = ""))
+                    val i = db.historialDao().insert(Historial(id = post.id, producto = post.name, tipo = post.type, img = post.img))
                 }
             }
 
@@ -157,7 +160,7 @@ class Camera : Fragment() {
                             displayData(post)
                         }
                     }
-                    Log.i("LOG_ROBBY", "${call}")
+                    Log.i("LOG_ROBBY", "$call")
                     Log.i("LOG_ROBBY", "${call.body()}")
                 }
 
