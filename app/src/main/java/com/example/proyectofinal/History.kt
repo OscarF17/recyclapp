@@ -1,32 +1,37 @@
 package com.example.proyectofinal
 
+import android.app.appsearch.GlobalSearchSession
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.StringBuilder
+import androidx.room.Room
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [History.newInstance] factory method to
- * create an instance of this fragment.
+/*
+TODO: Revisar que los registros insertados no sean duplicados por la llave primaria
+      NO se hace automáticamente por el Room ya que el ID no es autoincremental
  */
-class History : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+class History(dbInput: AppDatabase) : Fragment() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var db: AppDatabase
+    lateinit var adapter: HistorialAdapter
+    private val historial = mutableListOf<Historial>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -34,26 +39,52 @@ class History : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
+        val view = inflater.inflate(R.layout.fragment_history, container, false)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        adapter = HistorialAdapter(historial)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+        Log.i("LOGOSCAR", "Reycler View inicializado")
+
+        db = Room.databaseBuilder(requireContext(),
+            AppDatabase::class.java, "Recyclapp.db").build()
+
+
+
+        GlobalScope.launch(Dispatchers.IO) {
+            db.historialDao().deleteEverything()
+            val h = Historial(id="123", producto = "bonafont", tipo = "plastico", img = "img.jpg")
+            val h2 = Historial(id="12345", producto = "chococrisps", tipo = "carton", img = "")
+            var insertar = db.historialDao().insert(h)
+            insertar = db.historialDao().insert(h2)
+            val hist = db.historialDao().getAllHistorial()
+
+            launch(Dispatchers.Main) {
+                historial.addAll(hist)
+                adapter.notifyDataSetChanged()
+            }
+
+
+
+        }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment History.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            History().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun getData() {
+        Log.i("LOGOSCAR", "Obteniendo datos...")
+        GlobalScope.launch(Dispatchers.IO) {
+            Log.i("LOGOSCAR", "Leyendo base de datos...")
+            val hist = db.historialDao().getAllHistorial()
+            Log.i("LOGOSCAR", "Base de datos leida")
+            launch(Dispatchers.Main) {
+                Log.i("LOGOSCAR", "Guardando historial...")
+                historial.addAll(hist)
+                Log.i("LOGOSCAR", "Actualizando dataset...")
+                adapter.notifyDataSetChanged()
+                Log.i("LOGOSCAR", "Exito")
             }
+
+        }
     }
 }
