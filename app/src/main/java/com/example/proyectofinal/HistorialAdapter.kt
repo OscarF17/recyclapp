@@ -1,7 +1,9 @@
 package com.example.proyectofinal
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.databinding.ItemHistorialBinding
 
@@ -10,15 +12,14 @@ class HistorialAdapter(private val historial: List<Historial>):
 
     inner class HistorialViewHolder(val binding: ItemHistorialBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            fun bind(hist: Historial) {
+        private lateinit var db: AppDatabase
+
+        fun bind(hist: Historial) {
                 binding.historialProducto.text = hist.producto
                 binding.historialTipo.text = hist.tipo
                 binding.btnInfo.setOnClickListener {
                     // TODO: Llamar al fragmento usando el id
-                    val id = hist.id
-                }
-                binding.btnDel.setOnClickListener {
-                    // TODO: Llamar a la función para borrar del historial
+                    Log.i("LOGOSCAR", "CLICK AL BOTON: ${hist.producto}")
                 }
             }
         }

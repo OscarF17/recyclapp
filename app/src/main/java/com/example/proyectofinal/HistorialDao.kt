@@ -19,4 +19,7 @@ interface HistorialDao {
 
     @Delete
     fun deleteHistorial(historial: Historial): Int
+
+    @Query("DELETE FROM Historial")
+    fun deleteEverything()
 }
