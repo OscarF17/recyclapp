@@ -48,6 +48,7 @@ class Camera : Fragment() {
         /* Quitar boton de regreso y información y poner boton de escaner */
         binding.btnBack.setOnClickListener {
             binding.btnScan.visibility = View.VISIBLE
+            binding.scanTitle.visibility = View.VISIBLE
             binding.btnBack.visibility = View.GONE
             binding.textView1.visibility = View.GONE
             binding.textView2.visibility = View.GONE
@@ -79,9 +80,11 @@ class Camera : Fragment() {
                 var view2 = binding.textView2
                 var view3 = binding.textView3
                 var imageView = binding.imageView
+                var scanTitle = binding.scanTitle
 
                 /* Quitar boton de Scannear y poner boton de regreso y de textview de info */
                 btnScan2.visibility = View.GONE
+                scanTitle.visibility = View.GONE
                 btnBack.visibility = View.VISIBLE
                 view1.visibility = View.VISIBLE
                 view2.visibility = View.VISIBLE
@@ -105,14 +108,17 @@ class Camera : Fragment() {
         var view3 = binding.textView3
         var imageView = binding.imageView
         var url = "http://35.208.119.80:5000/image/${post.img}"
+        var scanTitle = binding.scanTitle
 
         if (post.id == "NONE") {
             btnScan.visibility = View.VISIBLE
+            scanTitle.visibility = View.VISIBLE
             btnBack.visibility = View.GONE
             view1.visibility = View.GONE
             view2.visibility = View.GONE
             view3.visibility = View.GONE
             imageView.visibility = View.GONE
+
             Toast.makeText(requireContext(), "No se encontró en la base de datos 😣", Toast.LENGTH_SHORT).show()
             Log.i("LOG_ROBBY", "${post.id}, ${post.name}, ${post.tips} ")
         } else {
