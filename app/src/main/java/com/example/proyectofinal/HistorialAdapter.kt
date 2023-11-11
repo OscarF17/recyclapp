@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.databinding.ItemHistorialBinding
+import com.squareup.picasso.Picasso
 
 class HistorialAdapter(private val historial: List<Historial>):
     RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>(){
@@ -15,11 +16,14 @@ class HistorialAdapter(private val historial: List<Historial>):
         private lateinit var db: AppDatabase
 
         fun bind(hist: Historial) {
+                // TODO: Guardar el nombre de la imagen en la bd
+                var url = "http://35.208.119.80:5000/image/${hist.img}"
+                Picasso.get().load(url).into(binding.historialImagen);
                 binding.historialProducto.text = hist.producto
                 binding.historialTipo.text = hist.tipo
                 binding.btnInfo.setOnClickListener {
                     // TODO: Llamar al fragmento usando el id
-                    Log.i("LOGOSCAR", "CLICK AL BOTON: ${hist.producto}")
+                    Log.i("LOGOSCAR", "CLICK AL BOTON: ${hist.producto}, IMAGEN: ${hist.img}")
                 }
             }
         }

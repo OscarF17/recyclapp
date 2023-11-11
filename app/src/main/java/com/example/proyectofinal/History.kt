@@ -49,8 +49,6 @@ class History(dbInput: AppDatabase) : Fragment() {
         db = Room.databaseBuilder(requireContext(),
             AppDatabase::class.java, "Recyclapp.db").build()
 
-
-
         GlobalScope.launch(Dispatchers.IO) {
             val hist = db.historialDao().getAllHistorial()
 
