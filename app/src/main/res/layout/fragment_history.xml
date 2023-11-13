@@ -22,7 +22,7 @@
             android:id="@+id/historyTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Historial"
+            android:text="@string/historyTitle"
             android:textColor="@color/white"
             android:textSize="30sp"
             android:textStyle="bold"

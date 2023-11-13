@@ -1,5 +1,17 @@
 <resources>
-    <string name="app_name">Proyectofinal</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Recyclapp</string>
+
+    <!-- Palabras para secciones -->
+    <string name="scannerTitle">Escáner</string>
+    <string name="cameraTitle">Cámara</string>
+    <string name="historyTitle">Historial</string>
+    <string name="mapTitle">Mapa</string>
+    <string name="appTitle">App</string>
+    <string name="infoTitle">Información</string>
+
+    <!-- Palabras de prueba -->
+    <string name="text1">Text 1</string>
+    <string name="text2">Text 2</string>
+    <string name="text3">Text 3</string>
+
 </resources>
