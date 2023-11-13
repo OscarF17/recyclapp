@@ -100,25 +100,15 @@ class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClick
 
     }
 
-    // Llamar al API
+    // Obtener información de la base de datos
     private fun getData(id: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val call = getRetrofit().create(JsonPlaceholderApi::class.java)
-                    .getPosts("http://35.208.119.80:5000/get_product/${id}")
-                val post = call.body()
-                requireActivity().runOnUiThread {
-                    if (call.isSuccessful) {
-                        if (post != null) {
-                            displayData(post)
-                        }
-                    }
-                }
-
-            } catch (e: Exception) {
-                requireActivity().runOnUiThread {
-                    Log.e("LOG_ROBBY", "Error: ${e.message}")
-                }
+        GlobalScope.launch(Dispatchers.IO) {
+            val query = db.historialDao().getHistorialById(id)
+            // Obtener primer y único resultado del query
+            val info = query[0]
+            launch(Dispatchers.Main) {
+                val data = Post(id = info.id, img = info.img, tips = info.tips, type = info.tipo, name = info.producto)
+                displayData(data)
             }
         }
     }
@@ -126,13 +116,11 @@ class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClick
     // Desplegar datos obtenidos
     @SuppressLint("SetTextI18n")
     private fun displayData(post: Post) {
-        val btnBack = binding.btnBack
         val view1 = binding.textView1
         val view2 = binding.textView2
         val view3 = binding.textView3
         val imageView = binding.imageView
         val url = "http://35.208.119.80:5000/image/${post.img}"
-        val historyTitle = binding.historyTitle
 
         Picasso.get().load(url).into(imageView)
         view1.text = "ID: ${post.id}"

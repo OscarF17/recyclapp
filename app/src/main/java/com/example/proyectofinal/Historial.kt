@@ -12,5 +12,6 @@ data class Historial(
     val id: String,
     val producto: String,
     val tipo: String,
+    val tips: String,
     val img: String
 )
