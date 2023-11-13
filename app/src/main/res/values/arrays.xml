@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="location_names">
+        <item>Seleccione punto de reciclaje</item>
+        <item>Reciclables San Pedro</item>
+        <item>Planta de Reciclado Grupo AlEn</item>
+        <item>Chatarra JRRR</item>
+        <item>Centro de Reciclaje 1</item>
+        <item>Centro de Reciclaje Servicios Públicos y Medio Ambiente</item>
+    </array>
+</resources>

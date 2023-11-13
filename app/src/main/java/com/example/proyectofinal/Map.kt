@@ -4,14 +4,14 @@ package com.example.proyectofinal
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,11 +27,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import java.io.IOException
 
 // Fragmento para desplegar el mapa
 class Map : Fragment(), OnMapReadyCallback, LocationListener,
@@ -44,6 +42,28 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
     private var mGoogleApiClient: GoogleApiClient? = null
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val nameList: List<String> = listOf(
+        "Reciclables San Pedro",
+        "Planta de Reciclado Grupo AlEn",
+        "Chatarra JRRR",
+        "Centro de Reciclaje 1",
+        "Centro de Reciclaje Servicios Públicos y Medio Ambiente"
+    )
+    private val latitudeList: List<Double> = listOf(
+        25.67161164230018,
+        25.67231021179866,
+        25.6675139169062,
+        25.671774618402647,
+        25.66691687829407
+    )
+    private val longitudeList: List<Double> = listOf(
+        -100.39913442329072,
+        -100.43629443916835,
+        -100.43234622756339,
+        -100.39922539260367,
+        -100.4103270005425
+    )
 
     companion object {
         private const val PERMISSIONS_REQUEST_LOCATION = 1
@@ -62,7 +82,15 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
 
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        val searchEditText: SearchView = binding.mapSearch
+        val spinnerLocations: Spinner = binding.spinnerLocations
+
+        val locationAdapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.location_names,
+            android.R.layout.simple_spinner_item
+        )
+        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerLocations.adapter = locationAdapter
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
@@ -71,18 +99,17 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         mLocationRequest.fastestInterval = 1000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
-        searchEditText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
-                    searchLocation(query)
-                }
-                return true
+        spinnerLocations.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedLocation = parent?.getItemAtPosition(position).toString()
+                showLocationMarker(selectedLocation)
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // No se necesita implementación aquí
             }
-        })
+        }
+
         mapFragment.getMapAsync(this)
     }
 
@@ -188,7 +215,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-
+            Toast.makeText(requireContext(), "Mapa cargado 🤠", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -196,57 +223,21 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
 
     override fun onConnectionFailed(p0: ConnectionResult) {}
 
-    private fun searchLocation(query: String) {
-        var addressList: List<Address>? = null
+    private fun showLocationMarker(selectedLocation: String) {
+        // Buscar la ubicación seleccionada en las listas y mostrar el marcador
+        val index = nameList.indexOf(selectedLocation)
+        if (index != -1) {
+            val latitude = latitudeList[index]
+            val longitude = longitudeList[index]
+            val latLng = LatLng(latitude, longitude)
 
-        if (query.isEmpty()) {
-            Toast.makeText(requireContext(), "Introduzca un lugar", Toast.LENGTH_SHORT).show()
-        } else {
-            val geocoder = Geocoder(requireContext())
-            try {
-                addressList = geocoder.getFromLocationName(query, 1)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            if (!addressList.isNullOrEmpty()) {
-                val address = addressList[0]
-                val latlng = LatLng(address.latitude, address.longitude)
-                mMap.addMarker(
-                    MarkerOptions().position(latlng).title(query)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                )
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 18f))
-            } else {
-                Toast.makeText(requireContext(), "Localización no encontrada", Toast.LENGTH_SHORT)
-                    .show()
-            }
+            mMap.clear() // Limpiar marcadores existentes
+            mMap.addMarker(MarkerOptions().position(latLng).title(selectedLocation))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
         }
     }
 
     private fun recyclerMarkers() {
-        val nameList: List<String> = listOf(
-            "Reciclables San Pedro",
-            "Planta de Reciclado Grupo AlEn",
-            "Chatarra JRRR",
-            "Centro de Reciclaje 1",
-            "Centro de Reciclaje Servicios Públicos y Medio Ambiente"
-        )
-        val latitudeList: List<Double> = listOf(
-            25.67161164230018,
-            25.67231021179866,
-            25.6675139169062,
-            25.671774618402647,
-            25.66691687829407
-        )
-        val longitudeList: List<Double> = listOf(
-            -100.39913442329072,
-            -100.43629443916835,
-            -100.43234622756339,
-            -100.39922539260367,
-            -100.4103270005425
-        )
-
         for (index in nameList.indices) {
             val name = nameList[index]
             val latitude = latitudeList[index]
