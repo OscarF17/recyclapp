@@ -5,9 +5,23 @@
     <string name="scannerTitle">Escáner</string>
     <string name="cameraTitle">Cámara</string>
     <string name="historyTitle">Historial</string>
-    <string name="instrcutionsTitle">Intrucciones de uso</string>
+    <string name="instructionsTitle">Intrucciones de uso</string>
     <string name="mapTitle">Mapa</string>
     <string name="infoTitle">Info</string>
+
+    <!-- Palabras para informacion de uso -->
+    <string name="cameraInfo">Puedes escanear el código de barras de algún producto, para consultar información acerca del reciclaje adecuado.</string>
+    <string name="step1Title">Paso 1:</string>
+    <string name="step1Info">Accede a la opción de Cámara en el menú de navegación inferior.</string>
+    <string name="step2Title">Paso 2:</string>
+    <string name="step2Info">Haz clic en el botón central con el icono de código de barras.</string>
+    <string name="step3Title">Paso 3:</string>
+    <string name="step3Info">Enfoca con la cámara el código de barras que desees escanear.</string>
+    <string name="step4Title">Paso 4:</string>
+    <string name="step4Info">La información de reciclaje aparecera ahí mismo.</string>
+
+    <string name="historyInfo">Puedes volver a consultar información de productos que ya hayas escaneado en la sección de historial.</string>
+    <string name="mapInfo">Puedes buscar lugares de reciclaje cercanos a ti, para que puedas depositar los desechos en lugares que reduzcan la contaminación que producen.</string>
 
     <!-- Palabras de prueba -->
     <string name="text1">Text 1</string>
