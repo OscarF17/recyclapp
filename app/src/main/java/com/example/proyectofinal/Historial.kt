@@ -3,9 +3,8 @@ package com.example.proyectofinal
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/*
-* Entrada de la base de datos
-*/
+// Clase para definir tabla Historial en la base de datos
+// Usada para guardar localmente los productos escaneados
 @Entity(tableName = "Historial")
 data class Historial(
     @PrimaryKey
