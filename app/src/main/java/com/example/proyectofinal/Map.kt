@@ -43,6 +43,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    // Listas que contienen información sobre los puntos de reciclaje
     private val nameList: List<String> = listOf(
         "Reciclables San Pedro",
         "Planta de Reciclado Grupo AlEn",
@@ -65,6 +66,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         -100.4103270005425
     )
 
+    // Constante para solicitar permisos de ubicación
     companion object {
         private const val PERMISSIONS_REQUEST_LOCATION = 1
     }
@@ -73,6 +75,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflar y devolver el diseño del fragmento
         binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -80,10 +83,13 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Obtener el fragmento del mapa
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        // Obtener la referencia al Spinner desde la vista
         val spinnerLocations: Spinner = binding.spinnerLocations
 
+        // Configurar un adaptador para el Spinner
         val locationAdapter = ArrayAdapter.createFromResource(
             requireContext(),
             R.array.location_names,
@@ -92,13 +98,16 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLocations.adapter = locationAdapter
 
+        // Inicializar el cliente de ubicación
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+        // Configuración de la solicitud de ubicación
         mLocationRequest = LocationRequest()
         mLocationRequest.interval = 1000
         mLocationRequest.fastestInterval = 1000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
+        // Configuración del evento de selección del Spinner
         spinnerLocations.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedLocation = parent?.getItemAtPosition(position).toString()
@@ -109,31 +118,35 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
                 // No se necesita implementación aquí
             }
         }
-
+        // Iniciar el mapa asincrónicamente
         mapFragment.getMapAsync(this)
     }
 
+    // Método llamado cuando el mapa está listo
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // Verificar permisos de ubicación
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            // Construir el cliente de Google API para la ubicación
             buildGoogleApiClient()
+            // Habilitar la capa de ubicación en el mapa
             mMap.isMyLocationEnabled = true
 
-            // Obtén la última ubicación conocida y mueve la cámara allí
+            // Obtener la última ubicación conocida y mover la cámara allí
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     onLocationChanged(location)
                 }
             }
-
+            // Mostrar marcadores de reciclaje en el mapa
             recyclerMarkers()
         } else {
-            // Request location permission
+            // Solicitar permiso de ubicación
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_LOCATION
@@ -150,7 +163,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         when (requestCode) {
             PERMISSIONS_REQUEST_LOCATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, initialize location services
+                    // Permiso concedido, inicializa los servicios de localización.
                     buildGoogleApiClient()
                     if (ActivityCompat.checkSelfPermission(
                             requireContext(),
@@ -171,10 +184,10 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
                         }
                     }
                 } else {
-                    // Permission denied, handle accordingly (e.g., show a message to the user)
+                    // Permiso denegado
                     Toast.makeText(
                         requireContext(),
-                        "Location permission denied",
+                        "Permiso denegado",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -185,6 +198,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         }
     }
 
+    // Método para construir el cliente de Google API para la ubicación
     private fun buildGoogleApiClient() {
         mGoogleApiClient = GoogleApiClient.Builder(requireContext())
             .addConnectionCallbacks(this)
@@ -193,36 +207,51 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         mGoogleApiClient!!.connect()
     }
 
+    // Método llamado cuando cambia la ubicación del dispositivo
     override fun onLocationChanged(location: Location) {
         mLastLocation = location
+        // Eliminar el marcador de ubicación actual
         if (mCurrentLocationMarker != null) {
             mCurrentLocationMarker!!.remove()
         }
 
+        // Obtener la posición (latitud y longitud) de la ubicación
         val latLng = LatLng(location.latitude, location.longitude)
 
+        // Mover la cámara al nuevo lugar
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         mMap.moveCamera(CameraUpdateFactory.zoomTo(18f))
     }
 
+    // Método llamado cuando la conexión a la API de Google es exitosa
     override fun onConnected(p0: Bundle?) {
+        // Configuración de la solicitud de ubicación
         mLocationRequest = LocationRequest()
         mLocationRequest.interval = 1000
         mLocationRequest.fastestInterval = 1000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        // Verificar permisos de ubicación
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            // Mostrar mensaje de carga del mapa
             Toast.makeText(requireContext(), "Mapa cargado 🤠", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onConnectionSuspended(p0: Int) {}
+    // Método llamado cuando la conexión a la API de Google se suspende
+    override fun onConnectionSuspended(p0: Int) {
+        // No se necesita implementación aquí
+    }
 
-    override fun onConnectionFailed(p0: ConnectionResult) {}
+    // Método llamado cuando la conexión a la API de Google falla
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        // No se necesita implementación aquí
+    }
 
+    // Método para mostrar el marcador de una ubicación seleccionada en el Spinner
     private fun showLocationMarker(selectedLocation: String) {
         // Buscar la ubicación seleccionada en las listas y mostrar el marcador
         val index = nameList.indexOf(selectedLocation)
@@ -237,6 +266,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
         }
     }
 
+    // Método para agregar marcadores al mapa basados en las listas de ubicaciones
     private fun recyclerMarkers() {
         for (index in nameList.indices) {
             val name = nameList[index]
