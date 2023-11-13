@@ -27,11 +27,11 @@ import com.squareup.picasso.Picasso
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClickListener {
+// Fragmento para ver el historial
+class History() : Fragment(), HistorialAdapter.OnButtonClickListener {
     private lateinit var db: AppDatabase
     lateinit var adapter: HistorialAdapter
-    private val historial = mutableListOf<Historial>()
+    private val historial = mutableListOf<Historial>() // Datos para desplegar
     private lateinit var binding: FragmentHistoryBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,26 +44,30 @@ class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClick
         // Inflate the layout for this fragment
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
         adapter = HistorialAdapter(historial)
+
         // Asociar el onButtonClickListener del adaptador con esta clase (y su método ya implementado)
         adapter.onButtonClickListener = this
+
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
         // Botón para regresar
-        // Esconder información del producto, regresar recyclerview y título
+        // Esconder información del producto, mostrar recyclerview y título
         binding.btnBack.setOnClickListener {
             binding.historyTitle.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.VISIBLE
+
             binding.btnBack.visibility = View.GONE
             binding.textView1.visibility = View.GONE
             binding.textView2.visibility = View.GONE
             binding.textView3.visibility = View.GONE
             binding.imageView.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
         }
 
         db = Room.databaseBuilder(requireContext(),
             AppDatabase::class.java, "Recyclapp.db").build()
 
+        // Obtener historial de la base de datos y desplegar
         GlobalScope.launch(Dispatchers.IO) {
             val hist = db.historialDao().getAllHistorial()
 
@@ -74,9 +78,11 @@ class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClick
         }
         return binding.root
     }
+
     // Implementar el método de la interfaz del adaptador
+    // Cambia el fragmento para esconder el RV y mostrar la información del producto seleccionado
     override fun onButtonClick(hist: Historial) {
-        // Conseguir vistar
+        // Conseguir vistas
         val btnBack = binding.btnBack
         val view1 = binding.textView1
         val view2 = binding.textView2
@@ -97,41 +103,34 @@ class History(dbInput: AppDatabase) : Fragment(), HistorialAdapter.OnButtonClick
 
         // Obtener datos del servidor y desplegarlos
         getData(hist.id)
-
     }
 
-    // Obtener información de la base de datos
+    // Obtener información del producto seleccionado
     private fun getData(id: String) {
         GlobalScope.launch(Dispatchers.IO) {
             val query = db.historialDao().getHistorialById(id)
             // Obtener primer y único resultado del query
             val info = query[0]
             launch(Dispatchers.Main) {
-                val data = Post(id = info.id, img = info.img, tips = info.tips, type = info.tipo, name = info.producto)
-                displayData(data)
+                displayData(info)
             }
         }
     }
 
     // Desplegar datos obtenidos
     @SuppressLint("SetTextI18n")
-    private fun displayData(post: Post) {
+    private fun displayData(post: Historial) {
+        // Obtener vistas
         val view1 = binding.textView1
         val view2 = binding.textView2
         val view3 = binding.textView3
         val imageView = binding.imageView
-        val url = "http://35.208.119.80:5000/image/${post.img}"
 
+        // Cargar datos
+        val url = "http://35.208.119.80:5000/image/${post.img}"
         Picasso.get().load(url).into(imageView)
         view1.text = "ID: ${post.id}"
-        view2.text = post.name
+        view2.text = post.producto
         view3.text = post.tips
-    }
-
-    private fun getRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("http://35.208.119.80:5000")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
     }
 }
