@@ -1,16 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Settings">
+    tools:context=".Camera">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/instructionsbg"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textSize="26dp"
-        android:layout_gravity="center"/>
+        android:background="@drawable/bg_title"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/instructionsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/instrcutionsTitle"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Información"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/baseline_arrow_back_ios_24" />
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_marginTop="160px"
+        android:layout_marginBottom="160px"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-82dp">
+
+        <TextView
+            android:id="@+id/cameraTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cámara"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:paddingBottom="10px"/>
+        <TextView
+            android:id="@+id/cameraInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Puedes escanear el código de barras de algún producto, para consultar información acerca del reciclaje adecuado."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="40px"/>
+        <TextView
+            android:id="@+id/step1Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paso 1:"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/step1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Accede a la opción de Cámara en el menú de navegación inferior."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="40px"/>
+        <TextView
+            android:id="@+id/step2Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paso 2:"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/step2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Haz clic en el botón central con el icono de código de barras."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="40px"/>
+        <TextView
+            android:id="@+id/step3Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paso 3:"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/step3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enfoca con la cámara el código de barras que desees escanear."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="40px"/>
+        <TextView
+            android:id="@+id/step4Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paso 4:"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/step4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="La información de reciclaje aparecera ahí mismo."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="80px"/>
+        <TextView
+            android:id="@+id/historySubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Historial"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:paddingBottom="10px"/>
+        <TextView
+            android:id="@+id/historyInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Puedes volver a consultar información de productos que ya hayas escaneado en la sección de historial."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:paddingBottom="80px"/>
+        <TextView
+            android:id="@+id/mapSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mapa"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:paddingBottom="10px"/>
+        <TextView
+            android:id="@+id/mapInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Puedes buscar lugares de reciclaje cercanos a ti, para que puedas depositar los desechos en lugares que reduzcan la contaminación que producen."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="visible" />
+
+    </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

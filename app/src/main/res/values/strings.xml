@@ -5,6 +5,7 @@
     <string name="scannerTitle">Escáner</string>
     <string name="cameraTitle">Cámara</string>
     <string name="historyTitle">Historial</string>
+    <string name="instrcutionsTitle">Intrucciones de uso</string>
     <string name="mapTitle">Mapa</string>
     <string name="appTitle">App</string>
     <string name="infoTitle">Información</string>
