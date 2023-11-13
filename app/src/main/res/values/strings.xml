@@ -7,8 +7,7 @@
     <string name="historyTitle">Historial</string>
     <string name="instrcutionsTitle">Intrucciones de uso</string>
     <string name="mapTitle">Mapa</string>
-    <string name="appTitle">App</string>
-    <string name="infoTitle">Información</string>
+    <string name="infoTitle">Info</string>
 
     <!-- Palabras de prueba -->
     <string name="text1">Text 1</string>
