@@ -136,13 +136,9 @@ class Camera : Fragment() {
                     view3.text = post.tips
                 }
                 if(check.isEmpty()) {
-                    Log.i("LOGOSCAR", "Guardando datos...")
                     val i = db.historialDao().insert(Historial(id = post.id, producto = post.name, tipo = post.type, tips = post.tips, img = post.img))
-                    Log.i("LOGOSCAR", "Datos guardados")
                 }
             }
-
-
         }
     }
 

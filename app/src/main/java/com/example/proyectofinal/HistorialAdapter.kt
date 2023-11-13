@@ -1,9 +1,7 @@
 package com.example.proyectofinal
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.databinding.ItemHistorialBinding
 import com.squareup.picasso.Picasso
@@ -26,14 +24,14 @@ class HistorialAdapter(private val historial: List<Historial>):
     var onButtonClickListener: OnButtonClickListener? = null
 
     // ViewHolder para el recyclerview
-    inner class HistorialViewHolder(val binding: ItemHistorialBinding) :
+    inner class HistorialViewHolder(private val binding: ItemHistorialBinding) :
         RecyclerView.ViewHolder(binding.root) {
         // Ligar cada elemento del RV con su informaciónn
         fun bind(hist: Historial) {
                 // Obtener imagen del producto y desplegar
-                var url = "http://35.208.119.80:5000/image/${hist.img}"
-                Picasso.get().load(url).into(binding.historialImagen);
-                binding.historialProducto.text = hist.producto
+                val url = "http://35.208.119.80:5000/image/${hist.img}"
+                Picasso.get().load(url).into(binding.historialImagen)
+            binding.historialProducto.text = hist.producto
                 binding.historialTipo.text = hist.tipo
                 binding.btnInfo.setOnClickListener {
                     // Ligar cada botón con el método de la interfaz para cambiar el fragmento

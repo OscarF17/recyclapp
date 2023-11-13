@@ -1,46 +1,32 @@
 package com.example.proyectofinal
 
 import android.annotation.SuppressLint
-import android.app.appsearch.GlobalSearchSession
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
+import androidx.room.Room
+import com.example.proyectofinal.databinding.FragmentHistoryBinding
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.StringBuilder
-import androidx.room.Room
-import com.example.proyectofinal.databinding.FragmentCameraBinding
-import com.example.proyectofinal.databinding.FragmentHistoryBinding
-import com.squareup.picasso.Picasso
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 // Fragmento para ver el historial
-class History() : Fragment(), HistorialAdapter.OnButtonClickListener {
+class History : Fragment(), HistorialAdapter.OnButtonClickListener {
     private lateinit var db: AppDatabase
-    lateinit var adapter: HistorialAdapter
+    private lateinit var adapter: HistorialAdapter
     private val historial = mutableListOf<Historial>() // Datos para desplegar
     private lateinit var binding: FragmentHistoryBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
         adapter = HistorialAdapter(historial)
@@ -106,6 +92,7 @@ class History() : Fragment(), HistorialAdapter.OnButtonClickListener {
     }
 
     // Obtener información del producto seleccionado
+    @OptIn(DelicateCoroutinesApi::class)
     private fun getData(id: String) {
         GlobalScope.launch(Dispatchers.IO) {
             val query = db.historialDao().getHistorialById(id)
