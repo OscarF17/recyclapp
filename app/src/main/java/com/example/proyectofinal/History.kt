@@ -130,7 +130,7 @@ class History() : Fragment(), HistorialAdapter.OnButtonClickListener {
         val url = "http://35.208.119.80:5000/image/${post.img}"
         Picasso.get().load(url).into(imageView)
         view1.text = "ID: ${post.id}"
-        view2.text = post.name
+        view2.text = post.producto
         view3.text = post.tips
     }
 }
