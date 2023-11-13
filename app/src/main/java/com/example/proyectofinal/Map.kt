@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.proyectofinal.databinding.FragmentMapBinding
@@ -42,6 +43,10 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
     private var mGoogleApiClient: GoogleApiClient? = null
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    companion object {
+        private const val PERMISSIONS_REQUEST_LOCATION = 1
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,12 +102,59 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
                     onLocationChanged(location)
                 }
             }
-        } else {
-            buildGoogleApiClient()
-            mMap.isMyLocationEnabled = true
-        }
 
-        recyclerMarkers()
+            recyclerMarkers()
+        } else {
+            // Request location permission
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_LOCATION
+            )
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_LOCATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, initialize location services
+                    buildGoogleApiClient()
+                    if (ActivityCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        return
+                    }
+                    mMap.isMyLocationEnabled = true
+
+                    // Obtén la última ubicación conocida y mueve la cámara allí
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        if (location != null) {
+                            onLocationChanged(location)
+                        }
+                    }
+                } else {
+                    // Permission denied, handle accordingly (e.g., show a message to the user)
+                    Toast.makeText(
+                        requireContext(),
+                        "Location permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
     }
 
     private fun buildGoogleApiClient() {
