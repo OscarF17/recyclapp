@@ -237,7 +237,7 @@ class Map : Fragment(), OnMapReadyCallback, LocationListener,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             // Mostrar mensaje de carga del mapa
-            Toast.makeText(requireContext(), "Mapa cargado 🤠", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(requireContext(), "Mapa cargado 🤠", Toast.LENGTH_SHORT).show()
         }
     }
 
