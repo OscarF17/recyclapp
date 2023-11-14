@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottom_camera -> replaceFragment(Camera())
                 R.id.bottom_history -> replaceFragment(History())
                 R.id.bottom_map -> replaceFragment(Map())
-                R.id.bottom_settings -> replaceFragment(Settings())
+                R.id.bottom_information -> replaceFragment(Information())
 
                 else -> {
                 }

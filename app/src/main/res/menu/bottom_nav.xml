@@ -14,7 +14,7 @@
         android:icon="@drawable/baseline_map_24"
         android:title="@string/mapTitle"/>
     <item
-        android:id="@+id/bottom_settings"
+        android:id="@+id/bottom_information"
         android:icon="@drawable/baseline_info_24"
         android:title="@string/infoTitle"/>
 
